@@ -15,18 +15,17 @@ def compute_required_sample_size(delta, stdev, power=0.8, significance=0.05):
 
     return n
 
-
-    # upper = dist.norm.cdf((theta_0-theta_star)/sig + z_half_alpha)
-    # lower = dist.norm.cdf((theta_0-theta_star)/sig - z_half_alpha)
-    # return 1-upper+lower
-
-def plot_sample_size_versus_power(delta, stdev, significance=0.05,power_range=(0,1)):
+def plot_sample_size_versus_power(delta, stdev, significance=0.05,power_range=(0,1),critical_power=0.8):
     powers = np.linspace(power_range[0],power_range[1])
     n_range = [compute_required_sample_size(delta, stdev,power=p,significance=significance) for p in powers]
+
+    critical_n = compute_required_sample_size(delta, stdev,power=critical_power,significance=significance)
+
     fig, ax = plt.subplots(1,1)
     ax.plot(powers,n_range,color='k')
-    # ax.vlines(0.8, ymin = 0, ymax = 1, color = 'blue', linestyle = '-', transform=ax.get_xaxis_transform())
-    # ax.hlines(0.8, ymin = 0, ymax = 1, color = 'blue', linestyle = '-', transform=ax.get_xaxis_transform())
+    ax.vlines(0.8, ymin = 0, ymax = critical_n, color = 'blue', linestyle = '--', label=rf'critical $n = $ {np.round(critical_n,2)}')
+    ax.hlines(critical_n, xmin=0, xmax=critical_power, color='blue',linestyle='--')
+    ax.legend()
     ax.set_ylabel(r'Required $n$')
     ax.set_xlabel('Desired power')
     return fig,ax
